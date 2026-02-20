@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aureus Academy - Debug</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#0b1120;color:#e8e6e1;font-family:system-ui,sans-serif;padding:40px}
+    #status{padding:20px;border-radius:12px;margin-bottom:12px;font-family:monospace;font-size:14px}
+    .ok{background:rgba(62,180,137,0.15);border:1px solid rgba(62,180,137,0.3);color:#3eb489}
+    .fail{background:rgba(199,95,107,0.15);border:1px solid rgba(199,95,107,0.3);color:#c75f6b}
+    .wait{background:rgba(201,169,110,0.15);border:1px solid rgba(201,169,110,0.3);color:#c9a96e}
+    h1{font-size:24px;margin-bottom:24px;color:#c9a96e}
+  </style>
+</head>
+<body>
+  <h1>AUREUS ACADEMY - Diagnostic</h1>
+  <div id="s1" class="wait">1. HTML charge... OK</div>
+  <div id="s2" class="wait">2. Chargement React...</div>
+  <div id="s3" class="wait">3. Chargement ReactDOM...</div>
+  <div id="s4" class="wait">4. Chargement Babel...</div>
+  <div id="s5" class="wait">5. Transpilation JSX...</div>
+  <div id="s6" class="wait">6. Rendu React...</div>
+  <div id="errors" style="margin-top:20px;padding:20px;background:rgba(199,95,107,0.1);border-radius:12px;display:none;font-family:monospace;font-size:12px;color:#c75f6b;white-space:pre-wrap"></div>
+  
+  <div id="root" style="margin-top:30px"></div>
+
+  <script>
+    // Catch ALL errors
+    window.onerror = function(msg, url, line, col, error) {
+      var el = document.getElementById('errors');
+      el.style.display = 'block';
+      el.textContent += 'ERROR: ' + msg + '\nLine: ' + line + ' Col: ' + col + '\n\n';
+      return false;
+    };
+    
+    function setStatus(id, ok, msg) {
+      var el = document.getElementById(id);
+      el.className = ok ? 'ok' : 'fail';
+      el.textContent = msg;
+    }
+    
+    document.getElementById('s1').className = 'ok';
+    document.getElementById('s1').textContent = '1. HTML charge... OK';
+  </script>
+  
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" 
+    onload="setStatus('s2', true, '2. React charge... OK (v' + React.version + ')')" 
+    onerror="setStatus('s2', false, '2. ERREUR: React ne charge pas! unpkg.com bloque?')"></script>
+    
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" 
+    onload="setStatus('s3', true, '3. ReactDOM charge... OK')" 
+    onerror="setStatus('s3', false, '3. ERREUR: ReactDOM ne charge pas!')"></script>
+    
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js" 
+    onload="setStatus('s4', true, '4. Babel charge... OK')" 
+    onerror="setStatus('s4', false, '4. ERREUR: Babel ne charge pas!')"></script>
+
+  <script type="text/babel">
+    setStatus('s5', true, '5. Transpilation JSX... OK');
+    
+    function TestApp() {
+      const [count, setCount] = React.useState(0);
+      setStatus('s6', true, '6. Rendu React... OK - TOUT FONCTIONNE!');
+      return React.createElement('div', {
+        style: {padding: '40px', background: 'rgba(62,180,137,0.1)', borderRadius: '16px', border: '1px solid rgba(62,180,137,0.2)', textAlign: 'center'}
+      },
+        React.createElement('h2', {style: {color: '#c9a96e', fontSize: '32px', marginBottom: '16px'}}, 'AUREUS ACADEMY'),
+        React.createElement('p', {style: {color: '#3eb489', marginBottom: '16px'}}, 'React fonctionne! Clicks: ' + count),
+        React.createElement('button', {
+          onClick: function() { setCount(count + 1); },
+          style: {padding: '12px 24px', background: '#c9a96e', border: 'none', borderRadius: '12px', color: '#0b1120', fontWeight: 'bold', cursor: 'pointer', fontSize: '14px'}
+        }, 'Cliquer ici')
+      );
+    }
+    
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(TestApp));
+  </script>
+</body>
+</html>
